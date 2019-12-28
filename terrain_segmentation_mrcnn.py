@@ -1,11 +1,11 @@
 # Mask_RCNN (MRCNN) is a feature pyramid network (FPN) with a ResNet101 backbone
 # Other models (Unet, FPN+Resnet-50) are trained in terrain_segmentation_others.py
+import os
 import time
 
 import mrcnn.buildings
 from mrcnn import model as modellib
 from mrcnn import utils
-import os
 
 config = mrcnn.buildings.BuildingConfig()
 ROOF_DIR = "deeproof-release/data/final-dataset/"
