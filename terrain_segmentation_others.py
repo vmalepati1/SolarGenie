@@ -201,7 +201,7 @@ for name, model in models.items():
     callbacks = [
         keras.callbacks.TensorBoard(log_dir="models/logs/{}".format(time()),
                                     histogram_freq=0, write_graph=True, write_images=False),
-        keras.callbacks.ModelCheckpoint('models/MRCNN_weights.latest.h5',
+        keras.callbacks.ModelCheckpoint('models/' + name +'_weights.latest.h5',
                                         verbose=1, save_weights_only=True),
     ]
 
