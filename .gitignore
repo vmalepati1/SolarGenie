@@ -28,3 +28,4 @@ hs_err_pid*
 deeproof-release/data/deeproof/
 deeproof-release/data/deeproof-aug/
 venv/
+*.npz
