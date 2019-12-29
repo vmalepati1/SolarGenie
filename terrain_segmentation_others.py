@@ -9,9 +9,8 @@ from PIL import Image
 # Number of classes (including background)
 from keras.utils import Sequence
 from skimage.draw import polygon
-
-IMAGE_DIM = 512
-
+from matplotlib.pyplot import figure
+figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
 
 class DataGenerator(Sequence):
     """Generates data for Keras
@@ -19,7 +18,7 @@ class DataGenerator(Sequence):
     """
 
     def __init__(self, image_path, class_ids,
-                 to_fit=True, batch_size=32, dim=(256, 256),
+                 to_fit=True, batch_size=32, dim=(256, 256), mask_scale_factor=1.0,
                  n_channels=1, n_classes=10, shuffle=True):
         """Initialization
         :param image_path: path to images location
@@ -27,6 +26,7 @@ class DataGenerator(Sequence):
         :param to_fit: True to return X and y, False to return X only
         :param batch_size: batch size at each iteration
         :param dim: tuple indicating image dimension
+        :param mask_scale_factor: scale factor for mask polygon points
         :param n_channels: number of image channels
         :param n_classes: number of output masks
         :param shuffle: True to shuffle label indexes after every epoch
@@ -36,18 +36,14 @@ class DataGenerator(Sequence):
         self.to_fit = to_fit
         self.batch_size = batch_size
         self.dim = dim
+        self.mask_scale_factor = mask_scale_factor
         self.n_channels = n_channels
         self.n_classes = n_classes
         self.shuffle = shuffle
         self.file_names = os.listdir(self.image_path)  # List of training image file names
         self.file_names.remove('via_region_data.json')
+        self.annotations = json.load(open(os.path.join(self.image_path, "via_region_data.json"))).values()
 
-        annotations = json.load(open(os.path.join(self.image_path, "via_region_data.json")))
-        annotations = list(annotations.values())  # don't need the dict keys
-
-        # The VIA tool saves images in the JSON even if they don't have any
-        # annotations. Skip unannotated images.
-        self.annotations = [a for a in annotations if a['regions']]
         self.on_epoch_end()
 
     def __len__(self):
@@ -89,14 +85,14 @@ class DataGenerator(Sequence):
         :return: batch of images
         """
         # Initialization
-        X = np.empty((self.batch_size, *self.dim, self.n_channels))
+        X = np.zeros((self.batch_size, *self.dim, self.n_channels))
 
         # Generate data
         for i, filepath in enumerate(list_file_names):
             # Store normalized sample
             orig = Image.open(os.path.join(self.image_path, filepath))
             new = orig.resize(self.dim)
-            X[i,] = np.array(new) / 255.0
+            X[i,] = np.asarray(new,'float')/255.0
 
         return X
 
@@ -105,7 +101,7 @@ class DataGenerator(Sequence):
         :param list_file_names: list of image filenames to load
         :return: batch of masks
         """
-        y = np.empty((self.batch_size, *self.dim, self.n_classes), dtype=int)
+        y = np.zeros((self.batch_size, *self.dim, self.n_classes), dtype=int)
 
         # Load annotations
         # VGG Image Annotator saves each image in the form:
@@ -125,47 +121,51 @@ class DataGenerator(Sequence):
         # Generate data
         for i, filename in enumerate(list_file_names):
             # Store sample
-            a = next(k for k in self.annotations if k['filename'] == filename)
+            try:
+              a = next(k for k in self.annotations if k['filename'] == filename)
+            except:
+              # Image had no regions
+              continue
 
             polygons = [r for r in a['regions'].values()]
 
             for poly in polygons:
-                rr, cc = polygon(poly['shape_attributes']['all_points_x'], poly['shape_attributes']['all_points_y'])
+                xp = [int(x * self.mask_scale_factor) for x in poly['shape_attributes']['all_points_x']]
+                yp = [int(y * self.mask_scale_factor) for y in poly['shape_attributes']['all_points_y']]
+                rr, cc = polygon(xp, yp)
                 output_layer_ix = self.class_ids[poly['region_attributes']['building']]
                 y[i, rr, cc, output_layer_ix] = 1
-                # plt.imshow(y[i, :, :, output_layer_ix])
-                # plt.show()
 
         return y
 
 
 NUM_CLASSES = 1 + 16 + 2 + 1
-IMAGE_DIM = 512
+IMAGE_DIM = 64
 
 TRAINING_IMAGE_DIR = 'deeproof-release/data/final-dataset/train'
 VAL_IMAGE_DIR = 'deeproof-release/data/final-dataset/val'
 
 class_ids_dict = {
     "BG": 0,
-    "N": 1,
-    "NNE": 2,
-    "NE": 3,
-    "ENE": 4,
-    "E": 5,
-    "ESE": 6,
-    "SE": 7,
-    "SSE": 8,
-    "S": 9,
-    "SSW": 10,
-    "SW": 11,
-    "WSW": 12,
-    "W": 13,
-    "WNW": 14,
-    "NW": 15,
-    "NNW": 16,
-    "tree": 17,
-    "flat": 18,
-    "dome": 19,
+    "flat": 1,
+    "dome": 2,
+    "N": 3,
+    "NNE": 4,
+    "NE": 5,
+    "ENE": 6,
+    "E": 7,
+    "ESE": 8,
+    "SE": 9,
+    "SSE": 10,
+    "S": 11,
+    "SSW": 12,
+    "SW": 13,
+    "WSW": 14,
+    "W": 15,
+    "WNW": 16,
+    "NW": 17,
+    "NNW": 18,
+    "tree": 19,
 }
 
 
@@ -190,33 +190,35 @@ models = {
 for name, model in models.items():
     print('Compiling ' + name)
     model.compile(
-        'Adam',
+        'SGD',
         loss=sm.losses.bce_jaccard_loss,
         metrics=[sm.metrics.iou_score],
     )
 
-    filepath = "models/" + name + ".best.hdf5"
-
     # Callbacks
     callbacks = [
-        keras.callbacks.TensorBoard(log_dir="models/logs/{}".format(time()),
+        keras.callbacks.TensorBoard(log_dir="models/others_logs/{}".format(time()),
                                     histogram_freq=0, write_graph=True, write_images=False),
         keras.callbacks.ModelCheckpoint('models/' + name +'_weights.latest.h5',
                                         verbose=1, save_weights_only=True),
+        keras.callbacks.ModelCheckpoint('models/' + name + '_weights.best.h5',
+                                        verbose=1, save_best_only=True, save_weights_only=True, mode='min'),
     ]
 
     print('Creating generators')
 
-    training_generator = DataGenerator(TRAINING_IMAGE_DIR, class_ids_dict, dim=(IMAGE_DIM, IMAGE_DIM), n_channels=3,
-                                       n_classes=NUM_CLASSES)
-    validation_generator = DataGenerator(VAL_IMAGE_DIR, class_ids_dict, dim=(IMAGE_DIM, IMAGE_DIM), n_channels=3,
-                                         n_classes=NUM_CLASSES)
+    training_generator = DataGenerator(TRAINING_IMAGE_DIR, class_ids_dict, dim=(IMAGE_DIM, IMAGE_DIM), mask_scale_factor=IMAGE_DIM/512,
+                                        n_channels=3,
+                                        n_classes=NUM_CLASSES)
+    validation_generator = DataGenerator(VAL_IMAGE_DIR, class_ids_dict, dim=(IMAGE_DIM, IMAGE_DIM), mask_scale_factor=IMAGE_DIM/512,
+                                          n_channels=3,
+                                          n_classes=NUM_CLASSES)
 
     print('Training ' + name)
     model.fit_generator(
         training_generator,
         verbose=1,
-        epochs=100,
+        epochs=40,
         steps_per_epoch=NUMBER_OF_TRAINING_IMAGES // BATCH_SIZE,
         callbacks=callbacks,
         validation_data=validation_generator,

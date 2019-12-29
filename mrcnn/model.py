@@ -2341,6 +2341,8 @@ class MaskRCNN():
                                         histogram_freq=0, write_graph=True, write_images=False),
             keras.callbacks.ModelCheckpoint('/content/gdrive/My Drive/SolarGenie/models/MRCNN_weights.latest.h5',
                                             verbose=1, save_weights_only=True),
+            keras.callbacks.ModelCheckpoint('/content/gdrive/My Drive/SolarGenie/models/MRCNN_weights.best.h5',
+                                            verbose=1, save_best_only=True, save_weights_only=True, mode='min'),
         ]
 
         # Train

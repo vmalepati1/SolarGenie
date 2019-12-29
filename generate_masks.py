@@ -10,6 +10,8 @@ IMAGE_DIM = 512
 def gen_masks(dataset_dir, subset):
     # List of colors for mask
     class_colormap = {
+        "flat": "#eb3468",
+        "dome": "#eb344f",
         "N": "#eb3434",
         "NNE": "#eb8f34",
         "NE": "#ebb134",
@@ -27,8 +29,6 @@ def gen_masks(dataset_dir, subset):
         "NW": "#eb34d0",
         "NNW": "#eb349f",
         "tree": "#eb3489",
-        "flat": "#eb3468",
-        "dome": "#eb344f",
     }
 
     # Train or validation dataset?
