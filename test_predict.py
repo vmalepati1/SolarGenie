@@ -24,7 +24,7 @@ class_names = [
 
 # get dictionary for first prediction
 r = results[0]
-print(len(r['rois']))
-print(len(r['masks']))
+print(r['rois'].shape)
+print(r['masks'].shape)
 # show photo with bounding boxes, masks, class labels and scores
 display_instances(img, r['rois'], r['masks'], r['class_ids'], class_names, r['scores'])
