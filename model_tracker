@@ -1,0 +1,4 @@
+MRCNN
+Model, val_loss
+MRCNN_weights.best_ST4, 1.58
+MRCNN_weights.best_FT1, 2.05

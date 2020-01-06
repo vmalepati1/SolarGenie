@@ -1,33 +1,41 @@
 import keras.backend as K
 import numpy as np
 
-def mean_orientation_error(azimuth_angle_dict):
+def degree_of_separation(oi, oj):
+    a = oi - oj
+    a = (a + 180) % 360 - 180
+    return abs(a)
+
+def mean_orientation_error(class_id_to_azimuth, batch_size=32):
 
     def metric(gt, pr):
-        # Time: O(B * C * (C - 1))
-        batch_size = gt.shape[0]
-        num_azimuths = gt.shape[3]
+        class_ids = list(class_id_to_azimuth.keys())
+        num_azimuths = len(class_ids)
 
+        start_ix = class_ids[0]
+        end_ix = class_ids[-1] + 1
+
+        tp = gt * pr
+        fn = gt - tp
+
+        si = 0
         for i in range(0, batch_size):
-            for j in range(0, num_azimuths):
-                mask_gt = gt[i, :, :, j]
-                mask_pr = pr[i, :, :, j]
+            for j in range(start_ix, end_ix):
+                mask_fn = fn[i, :, :, j]
+                sj = 0
+                ti = K.sum(gt[i, :, :, j])
 
-                # True positives
-                tp = mask_gt * mask_pr
-                fn = mask_gt - tp
-
-                for k in range(0, num_azimuths):
+                for k in range(start_ix, end_ix):
                     if k == j:
                         continue
 
-                    mask_pot_false_pred = pr[i, :, :, j]
+                    pij = K.sum(mask_fn * pr[i, :, :, k])
+                    sj += pij * degree_of_separation(class_id_to_azimuth[j], class_id_to_azimuth[k])
 
-                    pij = K.sum(mask_pot_false_pred * fn, axis=1)
+                cond = K.equal(ti, 0)
+                val = K.switch(cond, 0.0, sj / ti)
+                si += val
 
+        return 1 / num_azimuths * si
 
     return metric
-
-x = K.constant(np.array([[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3]]))
-
-print(K.sum(x, axis=2))
