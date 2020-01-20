@@ -9,10 +9,8 @@ from PIL import Image
 # Number of classes (including background)
 from keras.utils import Sequence
 from skimage.draw import polygon
-from google.colab import drive
 import matplotlib.pyplot as plt
 from matplotlib.image import imread
-drive.mount('/content/gdrive')
 from matplotlib.pyplot import figure
 import albumentations as A
 import keras.backend as K
@@ -171,8 +169,8 @@ class DataGenerator(Sequence):
 
         return np.array(y)
 
-TRAINING_IMAGE_DIR = '/content/gdrive/My Drive/SolarGenie/deeproof-release/data/final-dataset/train'
-VAL_IMAGE_DIR = '/content/gdrive/My Drive/SolarGenie/deeproof-release/data/final-dataset/val'
+TRAINING_IMAGE_DIR = 'deeproof-release/data/final-dataset/train'
+VAL_IMAGE_DIR = 'deeproof-release/data/final-dataset/val'
 
 classes = [
     "flat",
