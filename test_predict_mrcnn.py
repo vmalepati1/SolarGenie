@@ -2,7 +2,7 @@ import mrcnn.buildings
 from mrcnn import utils
 import mrcnn.model as modellib
 import numpy as np
-import skimage.io
+from PIL import Image
 from mrcnn.visualize import display_instances
 import cv2
 
@@ -14,7 +14,9 @@ model = modellib.MaskRCNN(mode="inference", model_dir='./', config=config)
 # load coco model weights
 model.load_weights('MRCNN_weights.best_ST4.h5', by_name=True)
 
-img = skimage.io.imread('deeproof-release/data/final-dataset/test/522749666.270.jpg')
+img = Image.open('test.png').convert('RGB')
+img = img.resize((512, 512))
+img = np.array(img)
 
 # make prediction
 results = model.detect([img, img], verbose=1)

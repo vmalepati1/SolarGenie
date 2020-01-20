@@ -5,7 +5,7 @@ from time import time
 import keras
 import numpy as np
 import segmentation_models as sm
-from PIL import Image
+from PIL import Image, ImageEnhance
 # Number of classes (including background)
 from keras.utils import Sequence
 from skimage.draw import polygon
@@ -54,13 +54,11 @@ class DataGenerator(Sequence):
 
     def _get_preprocessing(self, preprocessing_fn):
         """Construct preprocessing transform
-
         Args:
             preprocessing_fn (callbale): data normalization function
                 (can be specific for each pretrained neural network)
         Return:
             transform: albumentations.Compose
-
         """
 
         _transform = [
@@ -193,12 +191,10 @@ def denormalize(x):
     x = x.clip(0, 1)
     return x
 
-NUM_CLASSES = 1 + 16 + 2 + 1
-model = sm.FPN('resnet101', classes=NUM_CLASSES, encoder_weights='imagenet', activation='softmax')
+model = sm.FPN('resnet101', classes=19, encoder_weights='imagenet', activation='softmax')
 
 classes = [
     "flat",
-    "dome",
     "N",
     "NNE",
     "NE",
@@ -218,62 +214,30 @@ classes = [
     "tree",
 ]
 
-class_id_to_azimuth = {
-    2: 22.5,
-    3: 45,
-    4: 67.5,
-    5: 90,
-    6: 110.5,
-    7: 135,
-    8: 157.5,
-    9: 180,
-    10: 202.5,
-    11: 225,
-    12: 247.5,
-    13: 270,
-    14: 292.5,
-    15: 315,
-    16: 337.5,
-    17: 0,
-    18: 0
-}
+model.load_weights('fpn_resnet101_weights.latest.h5')
 
-model.load_weights('fpn_resnet101_weights.best.h5')
-test_gen = DataGenerator('deeproof-release/data/final-dataset/test', classes, 'resnet101', batch_size=4,
-                                     dim=(512, 512), mask_scale_factor=1.0)
-# define optomizer
-optim = keras.optimizers.Adam(0.01)
+def round_clip_0_1(x):
+    return x.round().clip(0, 1)
 
-# Segmentation models losses can be combined together by '+' and scaled by integer or float factor
-# set class weights for dice_loss (car: 1.; pedestrian: 2.; background: 0.5;)
-class_weights = np.array(
-    [2.36465827, 0.78821942, 0.78821942, 1.01760836, 1.00554493, 0.88297515,
-     0.99376417, 1.01682135, 1.00592961, 0.88327175, 0.99451589, 1.01682135,
-     1.00516055, 0.88297515, 0.99413989, 1.0172147, 1.00516055, 0.88297515,
-     0.99376417, 1.7390873]
+train_gen = DataGenerator("deeproof-release/data/final-dataset/test", classes, 'resnet101', batch_size=1, dim=(512, 512))
+
+# for i in np.arange(5):
+img = Image.open('high_resolution_image.png').convert('RGB')
+img = img.resize((512, 512))
+img = ImageEnhance.Brightness(img).enhance(0.65)
+img = ImageEnhance.Contrast(img).enhance(1.4)
+# img = ImageEnhance.Sharpness(img).enhance(1.2)
+img = np.array(img)
+
+x = np.zeros((1, 512, 512, 3))
+
+x[0, :, :, :] = img
+
+pr_mask = model.predict(x)
+visualize(
+    image=img,
+    pr_mask=round_clip_0_1(pr_mask[0, :, :, 15])
 )
-
-dice_loss = sm.losses.DiceLoss(class_weights=class_weights)
-focal_loss = sm.losses.CategoricalFocalLoss()
-total_loss = dice_loss + (1 * focal_loss)
-
-model.compile(optim, total_loss, metrics=[mean_orientation_error(class_id_to_azimuth, batch_size=4)])
-
-print(model.metrics_names)
-print(model.evaluate_generator(test_gen, steps=2))
-
-# ids = np.random.choice(np.arange(len(test_gen)), size=5)
-
-# def round_clip_0_1(x):
-#     return x.round().clip(0, 1)
-#
-# for i in ids:
-#     image, gt_mask = test_gen[i]
-#     pr_mask = model.predict(image)
-#     visualize(
-#         image=denormalize(image.squeeze()),
-#         pr_mask=round_clip_0_1(pr_mask[0, :, :, 19]),
-#     )
 #     # x = np.zeros((2, 512, 512, 3))
 #     # x[0, :, :, :] = image
 #     # x[1, :, :, :] = image

@@ -86,6 +86,6 @@ def gen_masks(dataset_dir, subset):
 
 
 ROOF_DIR = "deeproof-release/data/final-dataset/"
-# gen_masks(ROOF_DIR, 'train')
+gen_masks(ROOF_DIR, 'train')
 # gen_masks(ROOF_DIR, 'val')
-gen_masks(ROOF_DIR, 'test')
+# gen_masks(ROOF_DIR, 'test')

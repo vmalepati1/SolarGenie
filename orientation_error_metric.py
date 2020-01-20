@@ -6,8 +6,8 @@ def degree_of_separation(oi, oj):
     a = (a + 180) % 360 - 180
     return abs(a)
 
-def mean_orientation_error(class_id_to_azimuth, batch_size=32):
 
+def mean_orientation_error(class_id_to_azimuth, batch_size=32):
     def metric(gt, pr):
         class_ids = list(class_id_to_azimuth.keys())
         num_azimuths = len(class_ids)
@@ -18,8 +18,11 @@ def mean_orientation_error(class_id_to_azimuth, batch_size=32):
         tp = gt * pr
         fn = gt - tp
 
-        si = 0
+        smoe = 0
+
         for i in range(0, batch_size):
+            si = 0
+
             for j in range(start_ix, end_ix):
                 mask_fn = fn[i, :, :, j]
                 sj = 0
@@ -36,6 +39,8 @@ def mean_orientation_error(class_id_to_azimuth, batch_size=32):
                 val = K.switch(cond, 0.0, sj / ti)
                 si += val
 
-        return 1 / num_azimuths * si
+            smoe += 1 / num_azimuths * si
+
+        return smoe / batch_size
 
     return metric
