@@ -4,8 +4,8 @@
     <list default="true" id="81005157-3e0f-43dd-87c9-9bda12d2efe8" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/solar_genie.py" beforeDir="false" afterPath="$PROJECT_DIR$/solar_genie.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/gmaps_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/gmaps_testing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nsrdb_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nsrdb_testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/geocoding_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/geocoding_testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/pvlib_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/pvlib_testing.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -51,27 +51,6 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.solar_genie">
-    <configuration name="find_map_scale" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="SolarGenie" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/topology_estimation" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="C:\Users\malep\Documents\GitHub\SolarGenie\topology_estimation\find_map_scale.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="geocoding_testing" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SolarGenie" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -135,6 +114,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="pvlib_testing" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="SolarGenie" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/pvlib_testing.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="solar_genie" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SolarGenie" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -158,18 +158,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.geocoding_testing" />
-      <item itemvalue="Python.find_map_scale" />
       <item itemvalue="Python.solar_genie" />
       <item itemvalue="Python.gmaps_testing" />
       <item itemvalue="Python.nsrdb_testing" />
+      <item itemvalue="Python.pvlib_testing" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.solar_genie" />
+        <item itemvalue="Python.pvlib_testing" />
+        <item itemvalue="Python.geocoding_testing" />
         <item itemvalue="Python.nsrdb_testing" />
         <item itemvalue="Python.gmaps_testing" />
-        <item itemvalue="Python.find_map_scale" />
-        <item itemvalue="Python.geocoding_testing" />
       </list>
     </recent_temporary>
   </component>

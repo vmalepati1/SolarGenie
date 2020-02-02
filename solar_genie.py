@@ -57,42 +57,34 @@ from topology_estimation.extract_geometry import get_building_footprint
 from topology_estimation.get_building_data import get_building_data
 from solar_potential_analysis.solar_potential_analysis import get_pixelwise_solar_irradiance
 from skimage.draw import polygon
-import csv
+import pvlib
+from topology_estimation.get_elevation import elevation_function
+import pandas as pd
 import math
 import parmap
-import requests
 
-# def process_pixelwise_solar_potential(point, gmd, origin_x, origin_y, optimal_map_scale, index, orientation, roof_pitch):
-#
-#     url = "http://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv?api_key=fDFOk0vwiLzSJePAtLKg0oV8A8mex3yA9qYpdftK"
-#
-#     headers = {
-#         'content-type': "application/x-www-form-urlencoded",
-#         'cache-control': "no-cache"
-#     }
-#
-#     x = point[0]
-#     y = point[1]
-#
-#     lat, long = gmd.pixel_xy_to_lat_long(origin_x + x, origin_y + y, optimal_map_scale)
-#
-#     payload = "names=2018&leap_day=false&interval=30&utc=false&email=srinivasdeva3%40gmail.com&attributes=dhi%2Cdni%2Csolar_zenith_angle&wkt=POINT({}%20{})" \
-#         .format(long, lat)
-#
-#     response = requests.request("POST", url, data=payload, headers=headers)
-#
-#     try:
-#         data = response.text.splitlines()[index].split(',')
-#     except IndexError:
-#         return 0
-#
-#     beam_rad = float(data[6])
-#     diff_rad = float(data[5])
-#     solar_elevation_angle = math.radians(90 - float(data[7]))
-#     solar_azimuth_angle = math.radians(float(data[7]))
-#
-#     return get_pixelwise_solar_irradiance(beam_rad, diff_rad, orientation, roof_pitch,
-#                                                                solar_elevation_angle, solar_azimuth_angle)
+def process_pixelwise_solar_potential(point, gmd, origin_x, origin_y, optimal_map_scale, orientation, roof_pitch, times, altitude):
+    x = point[0]
+    y = point[1]
+
+    latitude, longitude = gmd.pixel_xy_to_lat_long(origin_x + x, origin_y + y, optimal_map_scale)
+
+    solpos = pvlib.solarposition.get_solarposition(times, latitude, longitude)
+    dni_extra = pvlib.irradiance.get_extra_radiation(times)
+    airmass = pvlib.atmosphere.get_relative_airmass(solpos['apparent_zenith'])
+    pressure = pvlib.atmosphere.alt2pres(altitude)
+    am_abs = pvlib.atmosphere.get_absolute_airmass(airmass, pressure)
+    tl = pvlib.clearsky.lookup_linke_turbidity(times, latitude, longitude)
+    cs = pvlib.clearsky.ineichen(solpos['apparent_zenith'], am_abs, tl,
+                                 dni_extra=dni_extra, altitude=altitude)
+
+    beam_rad = cs['dni']
+    diff_rad = cs['dhi']
+    solar_elevation_angle = math.radians(90 - solpos['apparent_zenith'])
+    solar_azimuth_angle = math.radians(solpos['azimuth'])
+
+    return get_pixelwise_solar_irradiance(beam_rad, diff_rad, orientation, roof_pitch,
+                                                               solar_elevation_angle, solar_azimuth_angle)
 
 if __name__ == '__main__':
     optimal_map_scale = 19
@@ -103,6 +95,7 @@ if __name__ == '__main__':
     g = geocode([address], timeout=5.0)
     lat = g.geometry[0].y
     long = g.geometry[0].x
+    altitude = elevation_function((lat, long))
 
     sq_m, roof_pitch = get_building_data(address, zipcode)
 
@@ -145,11 +138,12 @@ if __name__ == '__main__':
         16: 337.5,
     }
 
-    SUMMER_SOLSTICE_INDEX = 6229
-
     building_outline = get_building_footprint(address, sq_m)
 
     solar_potential_map = np.zeros((mask_resolution, mask_resolution), dtype=np.float)
+
+    times = pd.date_range('06/21/2018 14:00', periods=1, freq='20min')
+    times = times.tz_localize('EST')
 
     for i, orientation in class_id_to_azimuth.items():
 
@@ -184,14 +178,15 @@ if __name__ == '__main__':
             if pot_rooftop_planar.intersects(building_outline):
                 rr, cc = polygon([point[1] for point in contour], [point[0] for point in contour])
 
-                # solar_potential_map[rr, cc] = \
-                #     parmap.map(process_pixelwise_solar_potential, zip(rr, cc), gmd, origin_x, origin_y, optimal_map_scale, SUMMER_SOLSTICE_INDEX, orientation, roof_pitch)
+                parallel_results = np.asarray(
+                    parmap.map(process_pixelwise_solar_potential, zip(rr, cc), gmd, origin_x, origin_y, optimal_map_scale, orientation, roof_pitch, times, altitude)).squeeze()
 
+                solar_potential_map[rr, cc] = parallel_results
 
     plt.subplot(1, 2, 1)
     plt.imshow(gmd.generateImage(tile_width=1, tile_height=1))
     plt.subplot(1, 2, 2)
-    plt.imshow(solar_potential_map, cmap="Wistia")
+    plt.imshow(solar_potential_map, cmap="hot")
     plt.show()
 
     # x = [[point[0][0], point[0][1]] for point in contours[2]]
