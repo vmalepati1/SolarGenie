@@ -1,20 +1,16 @@
 import json
 import os
-from time import time
 
-import keras
 import numpy as np
 import segmentation_models as sm
-from PIL import Image, ImageEnhance
+from PIL import Image
 # Number of classes (including background)
 from keras.utils import Sequence
 from skimage.draw import polygon
 import matplotlib.pyplot as plt
-from matplotlib.image import imread
 
 from matplotlib.pyplot import figure
 import albumentations as A
-from orientation_error_metric import mean_orientation_error
 
 figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
 
@@ -112,6 +108,7 @@ class DataGenerator(Sequence):
         # Generate data
         for filepath in list_file_names:
             # Store normalized sample
+            print(os.path.join(self.image_path, filepath))
             orig = Image.open(os.path.join(self.image_path, filepath))
             new = orig.resize(self.dim)
             new_rgb = new.convert('RGB')
@@ -221,22 +218,31 @@ def round_clip_0_1(x):
 
 train_gen = DataGenerator("deeproof-release/data/final-dataset/test", classes, 'resnet101', batch_size=1, dim=(512, 512))
 
-# for i in np.arange(5):
-img = Image.open('high_resolution_image.png').convert('RGB')
-img = img.resize((512, 512))
-img = ImageEnhance.Brightness(img).enhance(0.65)
-img = ImageEnhance.Contrast(img).enhance(1.4)
-# img = ImageEnhance.Sharpness(img).enhance(1.2)
-img = np.array(img)
+x, y = train_gen[0]
 
-x = np.zeros((1, 512, 512, 3))
+pr_mask_all = model.predict(x)
+pr_mask = np.zeros((512, 512, 19))
 
-x[0, :, :, :] = img
+for i in range(19):
+    frame = round_clip_0_1(pr_mask_all[0, :, :, i])
+    frame = frame * i
+    pr_mask[:, :, i] = frame
 
-pr_mask = model.predict(x)
+pr_mask = np.sum(pr_mask, axis=-1)
+
+actual_mask = np.zeros((512, 512, 19))
+
+for i in range(19):
+    frame = round_clip_0_1(y[0, :, :, i])
+    frame = frame * i
+    actual_mask[:, :, i] = frame
+
+actual_mask = np.sum(actual_mask, axis=-1)
+
 visualize(
-    image=img,
-    pr_mask=round_clip_0_1(pr_mask[0, :, :, 15])
+    image=x[0, :, :, :],
+    pr_mask=pr_mask,
+    actual=actual_mask
 )
 #     # x = np.zeros((2, 512, 512, 3))
 #     # x[0, :, :, :] = image

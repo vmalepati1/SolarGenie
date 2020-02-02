@@ -16,6 +16,11 @@ import mrcnn.model as modellib
 import numpy as np
 from PIL import Image
 from mrcnn.visualize import display_instances
+import osmnx as ox
+import segmentation_models as sm
+from PIL import Image, ImageEnhance, ImageStat
+import albumentations as A
+import matplotlib.pyplot as plt
 
 class GoogleMapDownloader:
     """
@@ -105,38 +110,130 @@ class GoogleMapDownloader:
 
         return map_img
 
+def visualize(**images):
+    """PLot images in one row."""
+    n = len(images)
+    plt.figure(figsize=(16, 5))
+    for i, (name, image) in enumerate(images.items()):
+        plt.subplot(1, n, i + 1)
+        plt.xticks([])
+        plt.yticks([])
+        plt.title(' '.join(name.split('_')).title())
+        plt.imshow(image)
+    plt.show()
+
+def round_clip_0_1(x):
+    return x.round().clip(0, 1)
+
+def _get_preprocessing(preprocessing_fn):
+    """Construct preprocessing transform
+    Args:
+        preprocessing_fn (callbale): data normalization function
+            (can be specific for each pretrained neural network)
+    Return:
+        transform: albumentations.Compose
+    """
+
+    _transform = [
+        A.Lambda(image=preprocessing_fn),
+    ]
+    return A.Compose(_transform)
+
+def brightness(im):
+   stat = ImageStat.Stat(im)
+   return stat.mean[0]
 
 def main():
     # Create a new instance of GoogleMap Downloader
-    gmd = GoogleMapDownloader(33.96894305, -84.4571435620623, 19)
+    lat, long = ox.geocode("3250 Twisted Branches Ln NE, Marietta, GA 30068")
+
+    gmd = GoogleMapDownloader(lat, long, 19)
 
     print("The tile coorindates are {}".format(gmd.getXY()))
 
     try:
         # Get the high resolution image
-        img = np.array(gmd.generateImage(tile_width=1, tile_height=1))
+        img = gmd.generateImage(tile_width=1, tile_height=1)
 
-        config = mrcnn.buildings.BuildingConfig()
+        preprocess_input = _get_preprocessing(sm.get_preprocessing('resnet101'))
 
-        # Create model object in inference mode.
-        model = modellib.MaskRCNN(mode="inference", model_dir='./', config=config)
+        model = sm.FPN('resnet101', classes=19, encoder_weights='imagenet', activation='softmax')
 
-        # load coco model weights
-        model.load_weights('MRCNN_weights.best_ST4.h5', by_name=True)
-
-        # make prediction
-        results = model.detect([img, img], verbose=1)
-
-        class_names = [
-            "BG", "flat", "dome", "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW",
-            "NW", "NNW", "tree"
+        classes = [
+            "flat",
+            "dome",
+            "N",
+            "NNE",
+            "NE",
+            "ENE",
+            "E",
+            "ESE",
+            "SE",
+            "SSE",
+            "S",
+            "SSW",
+            "SW",
+            "WSW",
+            "W",
+            "WNW",
+            "NW",
+            "NNW",
+            "tree",
         ]
 
-        # get dictionary for first prediction
-        r = results[0]
-        print(r['class_ids'])
-        # show photo with bounding boxes, masks, class labels and scores
-        display_instances(img, r['rois'], r['masks'], r['class_ids'], class_names, r['scores'])
+        model.load_weights('fpn_resnet101_weights.latest.h5')
+
+        x = []
+
+        new = img.resize((512, 512))
+
+        TOLERANCE = 5.0
+        TARGET = 100
+
+        updated = new
+
+        if (brightness(new)) < TARGET:
+            i = 1.0
+            while True:
+                updated = ImageEnhance.Brightness(new).enhance(i)
+                print(brightness(updated))
+                if abs(brightness(updated) - TARGET) < TOLERANCE:
+                    break
+                i += 0.05
+        else:
+            i = 1.0
+            while True:
+                updated = ImageEnhance.Brightness(new).enhance(i)
+                print(brightness(updated))
+                if abs(brightness(updated) - TARGET) < TOLERANCE:
+                    break
+                i -= 0.05
+
+        # new = ImageEnhance.Brightness(new).enhance(1.1)
+        updated = ImageEnhance.Contrast(updated).enhance(1.4)
+        updated = ImageEnhance.Sharpness(updated).enhance(1.2)
+        new_rgb = updated.convert('RGB')
+        print(brightness(new_rgb))
+        im = np.asarray(new_rgb, 'int')
+        sample = preprocess_input(image=im)
+        x.append(sample['image'])
+
+        x = np.array(x)
+
+        pr_mask_all = model.predict(x)
+        pr_mask = np.zeros((512, 512, 19))
+
+        for i in range(19):
+            frame = round_clip_0_1(pr_mask_all[0, :, :, i])
+            frame = frame * i
+            pr_mask[:, :, i] = frame
+
+        pr_mask = np.sum(pr_mask, axis=-1)
+
+        visualize(
+            image=x[0, :, :, :],
+            pr_mask=pr_mask,
+        )
     except IOError:
         print("Could not generate the image - try adjusting the zoom level and checking your coordinates")
 
