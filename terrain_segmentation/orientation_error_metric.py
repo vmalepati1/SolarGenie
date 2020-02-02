@@ -1,5 +1,5 @@
 import keras.backend as K
-import numpy as np
+
 
 def degree_of_separation(oi, oj):
     a = oi - oj

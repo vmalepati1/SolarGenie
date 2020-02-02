@@ -1,10 +1,9 @@
-import mrcnn.buildings
-from mrcnn import utils
-import mrcnn.model as modellib
 import numpy as np
 from PIL import Image
+
+import mrcnn.buildings
+import mrcnn.model as modellib
 from mrcnn.visualize import display_instances
-import cv2
 
 config = mrcnn.buildings.BuildingConfig()
 
@@ -22,7 +21,8 @@ img = np.array(img)
 results = model.detect([img, img], verbose=1)
 
 class_names = [
-    "BG", "flat", "dome", "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", "tree"
+    "BG", "flat", "dome", "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW",
+    "NNW", "tree"
 ]
 
 # get dictionary for first prediction

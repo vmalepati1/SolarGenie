@@ -1,7 +1,6 @@
 import json
 import os
 
-import numpy as np
 from sklearn.utils import class_weight
 
 IMAGE_DIM = 512
@@ -76,6 +75,7 @@ def print_weights(dataset_dir, subset):
                                                       y_train)
 
     print(class_weights)
+
 
 ROOF_DIR = "deeproof-release/data/final-dataset/"
 print_weights(ROOF_DIR, 'train')

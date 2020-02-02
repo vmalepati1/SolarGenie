@@ -2,22 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="81005157-3e0f-43dd-87c9-9bda12d2efe8" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/osm_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/SolarGenie.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SolarGenie.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/find_class_weights.py" beforeDir="false" afterPath="$PROJECT_DIR$/terrain_segmentation/find_class_weights.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generate_masks.py" beforeDir="false" afterPath="$PROJECT_DIR$/terrain_segmentation/generate_masks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gmaps_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/gmaps_testing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/high_resolution_image.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_tracker" beforeDir="false" afterPath="$PROJECT_DIR$/models/model_tracker" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nsrdb_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nsrdb_testing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orientation_error_metric.py" beforeDir="false" afterPath="$PROJECT_DIR$/terrain_segmentation/orientation_error_metric.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/osm_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/terrain_segmentation_others.py" beforeDir="false" afterPath="$PROJECT_DIR$/terrain_segmentation/terrain_segmentation_others.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.PNG" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_predict_fpn.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_predict_fpn.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_predict_mrcnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_predict_mrcnn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/terrain_segmentation/find_class_weights.py" beforeDir="false" afterPath="$PROJECT_DIR$/terrain_segmentation/find_class_weights.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/terrain_segmentation/generate_masks.py" beforeDir="false" afterPath="$PROJECT_DIR$/terrain_segmentation/generate_masks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/terrain_segmentation/orientation_error_metric.py" beforeDir="false" afterPath="$PROJECT_DIR$/terrain_segmentation/orientation_error_metric.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/terrain_segmentation/terrain_segmentation_others.py" beforeDir="false" afterPath="$PROJECT_DIR$/terrain_segmentation/fpn_training.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/gmaps_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/gmaps_testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nsrdb_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nsrdb_testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/osm_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/osm_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_predict_fpn.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_predict_fpn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_predict_mrcnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_predict_mrcnn.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -25,10 +19,12 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>load_weights</find>
-    </findStrings>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -59,7 +55,28 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.gmaps_testing">
+  <component name="RunManager" selected="Python.roof_pitch_estimation">
+    <configuration name="geocoding_testing" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="SolarGenie" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/geocoding_testing.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="gmaps_testing" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SolarGenie" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -81,7 +98,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="osm_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="roof_pitch_estimation" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SolarGenie" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -89,11 +106,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/topology_estimation" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="C:\Users\malep\Documents\GitHub\SolarGenie\tests\osm_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/topology_estimation/roof_pitch_estimation.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -102,7 +119,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="terrain_segmentation_mrcnn" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="terrain_segmentation" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SolarGenie" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -110,11 +127,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/terrain_segmentation" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/terrain_segmentation_mrcnn.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/terrain_segmentation/terrain_segmentation.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -123,7 +140,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="terrain_segmentation_others" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="zillow_testing" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SolarGenie" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -131,32 +148,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="C:\Users\malep\Documents\GitHub\SolarGenie\terrain_segmentation\terrain_segmentation_others.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test_predict_fpn" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="SolarGenie" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="C:\Users\malep\Documents\GitHub\SolarGenie\tests\test_predict_fpn.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/zillow_testing.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -166,19 +162,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.terrain_segmentation_mrcnn" />
-      <item itemvalue="Python.terrain_segmentation_others" />
-      <item itemvalue="Python.test_predict_fpn" />
-      <item itemvalue="Python.osm_test" />
       <item itemvalue="Python.gmaps_testing" />
+      <item itemvalue="Python.geocoding_testing" />
+      <item itemvalue="Python.terrain_segmentation" />
+      <item itemvalue="Python.zillow_testing" />
+      <item itemvalue="Python.roof_pitch_estimation" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.roof_pitch_estimation" />
+        <item itemvalue="Python.terrain_segmentation" />
+        <item itemvalue="Python.zillow_testing" />
         <item itemvalue="Python.gmaps_testing" />
-        <item itemvalue="Python.osm_test" />
-        <item itemvalue="Python.test_predict_fpn" />
-        <item itemvalue="Python.terrain_segmentation_others" />
-        <item itemvalue="Python.terrain_segmentation_mrcnn" />
+        <item itemvalue="Python.geocoding_testing" />
       </list>
     </recent_temporary>
   </component>

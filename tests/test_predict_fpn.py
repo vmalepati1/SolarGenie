@@ -1,16 +1,15 @@
 import json
 import os
 
+import albumentations as A
+import matplotlib.pyplot as plt
 import numpy as np
 import segmentation_models as sm
 from PIL import Image
 # Number of classes (including background)
 from keras.utils import Sequence
-from skimage.draw import polygon
-import matplotlib.pyplot as plt
-
 from matplotlib.pyplot import figure
-import albumentations as A
+from skimage.draw import polygon
 
 figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
 
@@ -166,6 +165,7 @@ class DataGenerator(Sequence):
 
         return np.array(y)
 
+
 def visualize(**images):
     """PLot images in one row."""
     n = len(images)
@@ -187,6 +187,7 @@ def denormalize(x):
     x = (x - x_min) / (x_max - x_min)
     x = x.clip(0, 1)
     return x
+
 
 model = sm.FPN('resnet101', classes=19, encoder_weights='imagenet', activation='softmax')
 
@@ -213,10 +214,13 @@ classes = [
 
 model.load_weights('fpn_resnet101_weights.latest.h5')
 
+
 def round_clip_0_1(x):
     return x.round().clip(0, 1)
 
-train_gen = DataGenerator("deeproof-release/data/final-dataset/test", classes, 'resnet101', batch_size=1, dim=(512, 512))
+
+train_gen = DataGenerator("deeproof-release/data/final-dataset/test", classes, 'resnet101', batch_size=1,
+                          dim=(512, 512))
 
 x, y = train_gen[0]
 

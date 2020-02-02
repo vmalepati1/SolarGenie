@@ -1,18 +1,16 @@
 import random
 from io import BytesIO
 
+import albumentations as A
 import matplotlib.pyplot as plt
 import numpy as np
 import osmnx as ox
 import requests
 import segmentation_models as sm
 from PIL import Image, ImageEnhance, ImageStat
-import albumentations as A
-from geopandas.tools import geocode
 
 
 class TileServer(object):
-
     MIN_LATITUDE = -85.05112878
     MAX_LATITUDE = 85.05112878
     MIN_LONGITUDE = -180
@@ -31,9 +29,9 @@ class TileServer(object):
         for i in range(z, 0, -1):
             digit = 0
             mask = 1 << (i - 1)
-            if(xi & mask) != 0:
+            if (xi & mask) != 0:
                 digit += 1
-            if(yi & mask) != 0:
+            if (yi & mask) != 0:
                 digit += 2
             quadKey += str(digit)
         return quadKey
@@ -49,7 +47,7 @@ class TileServer(object):
         try:
             result = self.imdict[tilekey]
         except:
-            server = random.choice(range(1,4))
+            server = random.choice(range(1, 4))
             quadkey = self.tiletoquadkey(*tilekey)
             url = self.urltemplate.format(xi, yi, zoom, self.layerdict[self.layers], server, quadkey)
             response = requests.get(url)
@@ -93,6 +91,7 @@ class TileServer(object):
         pixelY = tile_y * 256
         return pixelX, pixelY
 
+
 def visualize(**images):
     """PLot images in one row."""
     n = len(images)
@@ -105,8 +104,10 @@ def visualize(**images):
         plt.imshow(image)
     plt.show()
 
+
 def round_clip_0_1(x):
     return x.round().clip(0, 1)
+
 
 def _get_preprocessing(preprocessing_fn):
     """Construct preprocessing transform
@@ -122,9 +123,11 @@ def _get_preprocessing(preprocessing_fn):
     ]
     return A.Compose(_transform)
 
+
 def brightness(im):
-   stat = ImageStat.Stat(im)
-   return stat.mean[0]
+    stat = ImageStat.Stat(im)
+    return stat.mean[0]
+
 
 if __name__ == "__main__":
     ts = TileServer()
@@ -132,7 +135,7 @@ if __name__ == "__main__":
     s = 16
 
     lat, long = ox.geocode("3473 Princeton Corners Dr, Marietta, GA 30062")
-    scale = np.log2(s * np.cos(lat * np.pi/180) * 2 * np.pi * 6378137)
+    scale = np.log2(s * np.cos(lat * np.pi / 180) * 2 * np.pi * 6378137)
 
     print(scale)
 
