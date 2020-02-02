@@ -2,6 +2,7 @@ from PIL import Image
 import math
 import urllib
 import os
+import numpy as np
 
 class GoogleMapDownloader:
     """
@@ -46,6 +47,42 @@ class GoogleMapDownloader:
                 tile_size / (2 * math.pi))) * numTiles // tile_size
 
         return int(point_x), int(point_y)
+
+    def map_size(self, detail):
+        return 256 << detail
+
+    def lat_long_to_pixel_xy(self, latitude, longitude, detail):
+        latitude = np.clip(latitude, self.MIN_LATITUDE, self.MAX_LATITUDE)
+        longitude = np.clip(longitude, self.MIN_LONGITUDE, self.MAX_LONGITUDE)
+
+        x = (longitude + 180) / 360
+        sinLatitude = np.sin(latitude * np.pi / 180)
+        y = 0.5 - np.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * np.pi)
+
+        mapSize = self.map_size(detail)
+        pixelX = np.clip(x * mapSize + 0.5, 0, mapSize - 1).astype(int)
+        pixelY = np.clip(y * mapSize + 0.5, 0, mapSize - 1).astype(int)
+
+        return pixelX, pixelY
+
+    def pixel_xy_to_lat_long(self, pixel_x, pixel_y, detail):
+        mapSize = self.map_size(detail)
+        x = (np.clip(pixel_x, 0, mapSize - 1) / mapSize) - 0.5
+        y = 0.5 - (np.clip(pixel_y, 0, mapSize - 1) / mapSize)
+
+        latitude = 90 - 360 * np.arctan(np.exp(-y * 2 * np.pi)) / np.pi
+        longitude = 360 * x
+        return latitude, longitude
+
+    def pixel_xy_to_tile_xy(self, pixel_x, pixel_y):
+        tileX = pixel_x // 256
+        tileY = pixel_y // 256
+        return tileX, tileY
+
+    def tile_xy_to_pixel_xy(self, tile_x, tile_y):
+        pixelX = tile_x * 256
+        pixelY = tile_y * 256
+        return pixelX, pixelY
 
     def generateImage(self, **kwargs):
         """

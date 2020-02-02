@@ -3,11 +3,8 @@ import keras
 import numpy as np
 import segmentation_models as sm
 from PIL import ImageEnhance, ImageStat
-from data_generator import DataGenerator
-from orientation_error_metric import mean_orientation_error
-from google_map_downloader import GoogleMapDownloader
-import matplotlib.pyplot as plt
-from geopandas.tools import geocode
+from terrain_segmentation.data_generator import DataGenerator
+from terrain_segmentation.orientation_error_metric import mean_orientation_error
 
 
 
@@ -56,38 +53,3 @@ class TerrainSegmentation:
     def brightness(self, im):
         stat = ImageStat.Stat(im)
         return stat.mean[0]
-
-
-classes = [
-    "flat",
-    "N",
-    "NNE",
-    "NE",
-    "ENE",
-    "E",
-    "ESE",
-    "SE",
-    "SSE",
-    "S",
-    "SSW",
-    "SW",
-    "WSW",
-    "W",
-    "WNW",
-    "NW",
-    "NNW",
-    "tree",
-]
-
-g = geocode(["901 Highbury Ln NE, Marietta, GA 30068"], timeout=5.0)
-lat = g.geometry[0].y
-long = g.geometry[0].x
-
-gmd = GoogleMapDownloader(lat, long, 19)
-
-# Get the high resolution image
-img = gmd.generateImage(tile_width=1, tile_height=1)
-
-ts = TerrainSegmentation(classes)
-plt.imshow(ts.predict_mask(img)[0, :, :, 18])
-plt.show()
