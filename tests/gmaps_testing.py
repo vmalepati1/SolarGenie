@@ -61,7 +61,7 @@ def main():
     # Geocoding not accurate as of now
     # lat, long = ox.geocode("3259 Twisted Branches Ln NE, Marietta, GA 30068")
 
-    TARGET_BRIGHTNESS = 70
+    TARGET_BRIGHTNESS = 85
 
     g = geocode(["901 Highbury Ln NE, Marietta, GA 30068"], timeout=5.0)
     lat = g.geometry[0].y
@@ -78,7 +78,7 @@ def main():
 
     model = sm.FPN('resnet101', classes=19, encoder_weights='imagenet', activation='softmax')
 
-    model.load_weights('models/fpn_resnet101_weights.latest.h5')
+    model.load_weights('../models/fpn_resnet101_weights.latest.h5')
 
     x = []
 
@@ -94,18 +94,18 @@ def main():
     x = np.array(x)
 
     pr_mask_all = model.predict(x)
-    pr_mask = np.zeros((512, 512, 19))
-
-    for i in range(19):
-        frame = np.where(pr_mask_all[0, :, :, i] > 0.1, 1, 0).clip(0, 1)
-        frame = frame * i
-        pr_mask[:, :, i] = frame
-
-    pr_mask = np.sum(pr_mask, axis=-1)
+    # pr_mask = np.zeros((512, 512, 19))
+    #
+    # for i in range(19):
+    #     frame = round
+    #     frame = frame * i
+    #     pr_mask[:, :, i] = frame
+    #
+    # pr_mask = np.sum(pr_mask, axis=-1)
 
     visualize(
         image=x[0, :, :, :],
-        pr_mask=pr_mask,
+        pr_mask=round_clip_0_1(pr_mask_all[0, :, :, 18]),
     )
 
 
