@@ -4,8 +4,6 @@
     <list default="true" id="81005157-3e0f-43dd-87c9-9bda12d2efe8" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/solar_genie.py" beforeDir="false" afterPath="$PROJECT_DIR$/solar_genie.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/geocoding_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/geocoding_testing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/pvlib_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/pvlib_testing.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

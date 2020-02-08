@@ -3,7 +3,9 @@
 # from geopandas.tools import geocode
 # from terrain_segmentation.terrain_segmentation import TerrainSegmentation
 # from terrain_segmentation.google_map_downloader import GoogleMapDownloader
-
+# import numpy as np
+# import matplotlib.pyplot as plt
+#
 # address = '901 Highbury Ln, Marietta, GA'
 # zipcode = '30068'
 #
@@ -43,9 +45,22 @@
 #     "tree",
 # ]
 #
-# ts = TerrainSegmentation(classes, model_path='models/fpn_resnet101_weights.latest.h5')
+# def visualize(**images):
+#     """PLot images in one row."""
+#     n = len(images)
+#     plt.figure(figsize=(16, 5))
+#     for i, (name, image) in enumerate(images.items()):
+#         plt.subplot(1, n, i + 1)
+#         plt.xticks([])
+#         plt.yticks([])
+#         plt.title(' '.join(name.split('_')).title())
+#         plt.imshow(image)
+#     plt.show()
 #
-# np.savez('saved_masks/first_test.npz', mask=ts.predict_mask(img))
+# ts = TerrainSegmentation(classes, model_path='models/fpn_resnet101_weights.latest.h5')
+# mask = ts.predict_mask(img)
+# visualize(img=img, mask=mask[0, :, :, 18])
+# np.savez('saved_masks/first_test.npz', mask=mask)
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -62,6 +77,7 @@ from topology_estimation.get_elevation import elevation_function
 import pandas as pd
 import math
 import parmap
+from sklearn.preprocessing import normalize
 
 def process_pixelwise_solar_potential(point, gmd, origin_x, origin_y, optimal_map_scale, orientation, roof_pitch, times, altitude):
     x = point[0]
@@ -173,26 +189,29 @@ if __name__ == '__main__':
                 lat, long = gmd.pixel_xy_to_lat_long(origin_x + x, origin_y + y, optimal_map_scale)
                 poly_points.append((long, lat))
 
-            pot_rooftop_planar = geometry.Polygon(poly_points)
+            try:
+                pot_rooftop_planar = geometry.Polygon(poly_points)
+            except:
+                continue
 
             if pot_rooftop_planar.intersects(building_outline):
                 rr, cc = polygon([point[1] for point in contour], [point[0] for point in contour])
 
                 parallel_results = np.asarray(
-                    parmap.map(process_pixelwise_solar_potential, zip(rr, cc), gmd, origin_x, origin_y, optimal_map_scale, orientation, roof_pitch, times, altitude)).squeeze()
+                    parmap.map(process_pixelwise_solar_potential, zip(rr, cc), gmd, origin_x, origin_y, optimal_map_scale, math.radians(orientation), roof_pitch, times, altitude)).squeeze()
 
                 solar_potential_map[rr, cc] = parallel_results
 
-    plt.subplot(1, 2, 1)
+    masked_data = np.ma.masked_where(solar_potential_map == 0, solar_potential_map)
+
     plt.imshow(gmd.generateImage(tile_width=1, tile_height=1))
-    plt.subplot(1, 2, 2)
-    plt.imshow(solar_potential_map, cmap="hot")
+    plt.imshow(masked_data, cmap="autumn")
     plt.show()
 
-    # x = [[point[0][0], point[0][1]] for point in contours[2]]
-    # print(x)
-    #
-    # poly = geometry.Polygon(x)
-    #
-    # plt.plot(*poly.exterior.xy)
-    # plt.show()
+    x = [[point[0][0], point[0][1]] for point in contours[2]]
+    print(x)
+
+    poly = geometry.Polygon(x)
+
+    plt.plot(*poly.exterior.xy)
+    plt.show(
