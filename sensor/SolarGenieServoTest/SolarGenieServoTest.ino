@@ -3,7 +3,7 @@
 Servo servo;
 
 const int lowerSoftLimit = 30;
-const int upperSoftLimit = 150;
+const int upperSoftLimit = 120;
 
 int currentAngle = lowerSoftLimit;
 bool increasing = true;

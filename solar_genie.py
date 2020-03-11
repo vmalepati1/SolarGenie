@@ -214,4 +214,4 @@ if __name__ == '__main__':
     poly = geometry.Polygon(x)
 
     plt.plot(*poly.exterior.xy)
-    plt.show(
+    plt.show()
